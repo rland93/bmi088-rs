@@ -1,0 +1,15 @@
+[default.probe]
+protocol = "Swd"
+
+[default.general]
+chip = "STM32F411RETx"
+connect_under_reset = false
+
+[default.flashing]
+enabled = true
+
+[default.reset]
+enabled = true
+
+[default.rtt]
+enabled = true
