@@ -84,13 +84,13 @@ where
 pub trait ReadData: private::Sealed {
     /// Error type
     type Error;
-    /// Read an u8 register on the accelerometer
+    /// Read an u8 `register` on the accelerometer
     fn read_register_acc(&mut self, register: u8) -> Result<u8, Self::Error>;
-    /// Read some data from the accelerometer. The first element corresponds to the starting address.
+    /// Read some `payload` data from the accelerometer from `register`
     fn read_data_acc(&mut self, register: u8, payload: &mut [u8]) -> Result<(), Self::Error>;
-    /// Read an u8 register on the accelerometer
+    /// Read an u8 `register` on the gyro
     fn read_register_gyro(&mut self, register: u8) -> Result<u8, Self::Error>;
-    /// Read some data from the accelerometer. The first element corresponds to the starting address.
+    /// Read some `payload` data from the gyro from `register`
     fn read_data_gyro(&mut self, register: u8, payload: &mut [u8]) -> Result<(), Self::Error>;
 }
 
