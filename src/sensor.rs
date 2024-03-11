@@ -3,7 +3,7 @@ use crate::{
     reg::{AccRegisters, GyroRegisters},
     types::{
         AccConf, AccDrdyMap, AccPowerConf, AccPowerEnable, AccRange, AccelerometerConfig, ErrCode,
-        IntConfiguration, Sensor3DData,
+        GyroRange, IntConfiguration, Sensor3DData,
     },
     Bmi088, Error,
 };
@@ -182,8 +182,8 @@ where
         let mut data = [0xFF];
         let reg = AccRegisters::ACC_CONF as u8;
         self.iface.read_data_acc(reg, &mut data)?;
-
-        Ok(AccConf::from(data[0]))
+        let conf = AccConf::try_from(data[0]).map_err(|_| Error::InvalidInputData)?;
+        Ok(conf)
     }
 
     /// Read ACC_RANGE (0x41)
@@ -196,8 +196,8 @@ where
         let mut data = [0xFF];
         let reg = AccRegisters::ACC_RANGE as u8;
         self.iface.read_data_acc(reg, &mut data)?;
-
-        Ok(AccRange::from(data[0]))
+        let range = AccRange::try_from(data[0]).map_err(|_| Error::InvalidInputData)?;
+        Ok(range)
     }
 
     /// Write ACC_RANGE. (0x41)
@@ -462,14 +462,14 @@ where
     ///
     /// # Returns
     ///
-    /// - `Ok(AccRange)`: Range value
+    /// - `Ok(GyroRange)`: Range value
     /// - `Err(Error<CommE>)`: Read failure
-    pub fn gyro_range_read(&mut self) -> Result<AccRange, Error<CommE>> {
+    pub fn gyro_range_read(&mut self) -> Result<GyroRange, Error<CommE>> {
         let mut data = [0xFF];
         let reg = GyroRegisters::GYRO_RANGE as u8;
         self.iface.read_data_gyro(reg, &mut data)?;
-
-        Ok(AccRange::from(data[0]))
+        let range = GyroRange::try_from(data[0]).map_err(|_| Error::InvalidInputData)?;
+        Ok(range)
     }
 
     /// Write gyro range (0x0F)
@@ -482,9 +482,9 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
-    pub fn gyro_range_write(&mut self, range: AccRange) -> Result<(), Error<CommE>> {
+    pub fn gyro_range_write(&mut self, range: GyroRange) -> Result<(), Error<CommE>> {
         let reg = GyroRegisters::GYRO_RANGE as u8;
-        let set = (range as u8) & 0b0000_0011; // [1:0]
+        let set = range as u8;
         self.iface.write_register_gyro(reg, set)?;
 
         Ok(())
