@@ -27,6 +27,9 @@ jobs:
           toolchain: ${{ matrix.rust }}
           targets: ${{ matrix.TARGET }}
 
+      - name: Add specific Rust targets for bare metal builds
+        run: rustup target add ${{ matrix.TARGET }}
+
       - name: Checkout CI scripts
         uses: actions/checkout@v4
         with:
