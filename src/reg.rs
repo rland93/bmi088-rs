@@ -2,7 +2,7 @@
 #![allow(non_camel_case_types)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 
-pub enum Registers {
+pub enum AccRegisters {
     /// Accelerometer Chip ID
     ACC_CHIP_ID = 0x00,
     /// Reports sensor error conditions
@@ -41,4 +41,31 @@ pub enum Registers {
     /// delay of 1 ms, all configuration settings are overwritten with their
     /// reset value. The soft-reset can be triggered from any operation mode.
     ACC_SOFTRESET = 0x7E,
+}
+
+pub enum GyroRegisters {
+    /// Gyro ChipID
+    GYRO_CHIP_ID = 0x00,
+    /// Angular Rate Data (0x02-0x07)
+    GYRO_RATE_DATA = 0x02,
+    /// Interrupt Status
+    GYRO_INT_STAT_1 = 0x0A,
+    /// Gyro Range
+    GYRO_RANGE = 0x0F,
+    /// Gyro Bandwidth
+    GYRO_BANDWIDTH = 0x10,
+    /// Selection of the main power modes. Please note that only switching
+    /// between normal mode and the suspend modes is allowed, it is not possible
+    /// to switch between suspend and deep suspend and vice versa.
+    GYRO_LPM1 = 0x11,
+    /// Gyro Soft Reset
+    GYRO_SOFTRESET = 0x14,
+    /// Gyro Interrupt control
+    GYRO_INT_CTRL = 0x15,
+    /// Int3, Int4 IO configuration
+    GYRO_INT3_INT4_IO_CONF = 0x16,
+    /// Map data ready interrupt to output pin INT3 and/or INT4
+    GYRO_INT3_INT4_MAP_DATA = 0x18,
+    /// Built-in self-test of gyroscope.
+    GYRO_SELF_TEST = 0x3C,
 }
