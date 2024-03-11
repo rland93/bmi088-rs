@@ -65,7 +65,7 @@ pub enum GyroRegisters {
     /// Int3, Int4 IO configuration
     GYRO_INT3_INT4_IO_CONF = 0x16,
     /// Map data ready interrupt to output pin INT3 and/or INT4
-    GYRO_INT3_INT4_MAP_DATA = 0x18,
+    GYRO_INT3_INT4_IO_MAP = 0x18,
     /// Built-in self-test of gyroscope.
     GYRO_SELF_TEST = 0x3C,
 }

@@ -403,3 +403,29 @@ impl TryFrom<u8> for GyroPowerMode {
         }
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum GyroDrdyMap {
+    /// Map data ready to neither pin
+    None = 0x00,
+    /// Map data ready interrupt to output pin INT1
+    Int3 = 0x01,
+    /// Map data ready interrupt to output pin INT2
+    Int4 = 0x80,
+    /// Map data ready interrupt to output pin INT1 and INT2
+    Int4Int5 = 0x81,
+}
+
+impl TryFrom<u8> for GyroDrdyMap {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
+        match item {
+            0x00 => Ok(GyroDrdyMap::None),
+            0x01 => Ok(GyroDrdyMap::Int3),
+            0x80 => Ok(GyroDrdyMap::Int4),
+            0x81 => Ok(GyroDrdyMap::Int4Int5),
+            _ => Err(Error::InvalidInputData),
+        }
+    }
+}

@@ -3,8 +3,8 @@ use crate::{
     reg::{AccRegisters, GyroRegisters},
     types::{
         AccConf, AccDrdyMap, AccPowerConf, AccPowerEnable, AccRange, AccelerometerConfig, ErrCode,
-        GyroBandwidth, GyroPowerMode, GyroRange, IntConfiguration, PinActive, PinBehavior,
-        Sensor3DData,
+        GyroBandwidth, GyroDrdyMap, GyroPowerMode, GyroRange, IntConfiguration, PinActive,
+        PinBehavior, Sensor3DData,
     },
     Bmi088, Error,
 };
@@ -720,6 +720,37 @@ where
             PinBehavior::PushPull => 0b0000_0000,
             PinBehavior::OpenDrain => 0b0000_0010,
         };
+        self.iface.write_register_gyro(reg, set)?;
+        Ok(())
+    }
+
+    /// Read interrupt 3 and 4 IO map (0x18)
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(GyroDrdyMap)`: The pin mapping
+    /// - `Err(Error<CommE>)`: Read failure
+    ///
+    pub fn gyro_drdy_map_read(&mut self) -> Result<GyroDrdyMap, Error<CommE>> {
+        let reg = GyroRegisters::GYRO_INT3_INT4_IO_MAP as u8;
+        let data = self.iface.read_register_gyro(reg)?;
+        GyroDrdyMap::try_from(data).map_err(|_| Error::InvalidInputData)
+    }
+
+    /// Write interrupt 3 and 4 IO map (0x18)
+    ///
+    /// # Arguments
+    ///
+    /// - `map`: The pin mapping
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn gyro_drdy_map_write(&mut self, map: GyroDrdyMap) -> Result<(), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_INT3_INT4_IO_MAP as u8;
+        let set = map as u8;
         self.iface.write_register_gyro(reg, set)?;
         Ok(())
     }
