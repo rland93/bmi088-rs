@@ -31,7 +31,7 @@ Thank you to [@eldruin](https://github.com/eldruin/bmi160-rs). The design of thi
   - [x] Interrupt Configuration (3/4)
   - [x] Status Registers
   - [ ] Self Test
-  - [x] Example Code
+  - [ ] Example Code
 
 - Misc.
   - [ ] Publish on crates.io
