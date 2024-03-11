@@ -1,3 +1,5 @@
+use core::convert::TryFrom;
+
 /// BMI088 errors.
 #[derive(Debug)]
 pub enum Error<CommE> {
@@ -96,13 +98,15 @@ pub enum AccBandwidth {
     X1 = 0x02,
 }
 
-impl From<u8> for AccBandwidth {
-    fn from(item: u8) -> Self {
+impl TryFrom<u8> for AccBandwidth {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
         match item {
-            0x00 => AccBandwidth::X4,
-            0x01 => AccBandwidth::X2,
-            0x02 => AccBandwidth::X1,
-            _ => panic!("Invalid value for AccBandwidth"),
+            0x00 => Ok(AccBandwidth::X4),
+            0x01 => Ok(AccBandwidth::X2),
+            0x02 => Ok(AccBandwidth::X1),
+            _ => Err(Error::InvalidInputData),
         }
     }
 }
@@ -128,18 +132,20 @@ pub enum AccDataRate {
     Hz1600 = 0x0C,
 }
 
-impl From<u8> for AccDataRate {
-    fn from(item: u8) -> Self {
+impl TryFrom<u8> for AccDataRate {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
         match item {
-            0x05 => AccDataRate::Hz12_5,
-            0x06 => AccDataRate::Hz25,
-            0x07 => AccDataRate::Hz50,
-            0x08 => AccDataRate::Hz100,
-            0x09 => AccDataRate::Hz200,
-            0x0A => AccDataRate::Hz400,
-            0x0B => AccDataRate::Hz800,
-            0x0C => AccDataRate::Hz1600,
-            _ => panic!("Invalid value for AccDataRate"),
+            0x05 => Ok(AccDataRate::Hz12_5),
+            0x06 => Ok(AccDataRate::Hz25),
+            0x07 => Ok(AccDataRate::Hz50),
+            0x08 => Ok(AccDataRate::Hz100),
+            0x09 => Ok(AccDataRate::Hz200),
+            0x0A => Ok(AccDataRate::Hz400),
+            0x0B => Ok(AccDataRate::Hz800),
+            0x0C => Ok(AccDataRate::Hz1600),
+            _ => Err(Error::InvalidInputData),
         }
     }
 }
@@ -153,11 +159,13 @@ pub struct AccConf {
     pub acc_odr: AccDataRate,
 }
 
-impl From<u8> for AccConf {
-    fn from(item: u8) -> Self {
-        let acc_bwp = AccBandwidth::from((item & 0b0111_0000) >> 4);
-        let acc_odr = AccDataRate::from(item & 0b0000_1111);
-        AccConf { acc_bwp, acc_odr }
+impl TryFrom<u8> for AccConf {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
+        let acc_bwp = AccBandwidth::try_from((item & 0b0111_0000) >> 4)?;
+        let acc_odr = AccDataRate::try_from(item & 0b0000_1111)?;
+        Ok(AccConf { acc_bwp, acc_odr })
     }
 }
 
@@ -174,19 +182,21 @@ pub enum AccRange {
     G24 = 0x03,
 }
 
-impl From<u8> for AccRange {
-    /// Raw register to AccRange
-    fn from(item: u8) -> Self {
+impl TryFrom<u8> for AccRange {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
         match item & 0b0000_0011 {
             // mask out the reserved bits
-            0x00 => AccRange::G3,
-            0x01 => AccRange::G6,
-            0x02 => AccRange::G12,
-            0x03 => AccRange::G24,
-            _ => panic!("Invalid value for AccRange"),
+            0x00 => Ok(AccRange::G3),
+            0x01 => Ok(AccRange::G6),
+            0x02 => Ok(AccRange::G12),
+            0x03 => Ok(AccRange::G24),
+            _ => Err(Error::InvalidInputData),
         }
     }
 }
+
 /// Struct to hold a complete accelerometer configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 
@@ -302,4 +312,94 @@ pub enum AccDrdyMap {
     Int2 = 0b0100_0000,
     /// Map data ready interrupt to output pin INT1 and INT2
     Int1Int2 = 0b0100_0100,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum GyroRange {
+    /// ±2000°/s
+    Dps2000 = 0x00,
+    /// ±1000°/s
+    Dps1000 = 0x01,
+    /// ±500°/s
+    Dps500 = 0x02,
+    /// ±250°/s
+    Dps250 = 0x03,
+    /// ±125°/s
+    Dps125 = 0x04,
+}
+
+impl TryFrom<u8> for GyroRange {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
+        match item {
+            0x00 => Ok(GyroRange::Dps2000),
+            0x01 => Ok(GyroRange::Dps1000),
+            0x02 => Ok(GyroRange::Dps500),
+            0x03 => Ok(GyroRange::Dps250),
+            0x04 => Ok(GyroRange::Dps125),
+            _ => Err(Error::InvalidInputData),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum GyroBandwidth {
+    /// 532 Hz, ODR 2000 Hz
+    Hz532 = 0x00,
+    /// 230 Hz, ODR 2000 Hz
+    Hz230 = 0x01,
+    /// 116 Hz, ODR 1000 Hz
+    Hz116 = 0x02,
+    /// 47 Hz, ODR 400 Hz
+    Hz47 = 0x03,
+    /// 23 Hz, ODR 200 Hz
+    Hz23 = 0x04,
+    /// 12 Hz, ODR 100 Hz
+    Hz12 = 0x05,
+    /// 64 Hz, ODR 200 Hz
+    Hz64 = 0x06,
+    /// 32 Hz, ODR 100 Hz
+    Hz32 = 0x07,
+}
+
+impl TryFrom<u8> for GyroBandwidth {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
+        match item {
+            0x00 => Ok(GyroBandwidth::Hz532),
+            0x01 => Ok(GyroBandwidth::Hz230),
+            0x02 => Ok(GyroBandwidth::Hz116),
+            0x03 => Ok(GyroBandwidth::Hz47),
+            0x04 => Ok(GyroBandwidth::Hz23),
+            0x05 => Ok(GyroBandwidth::Hz12),
+            0x06 => Ok(GyroBandwidth::Hz64),
+            0x07 => Ok(GyroBandwidth::Hz32),
+            _ => Err(Error::InvalidInputData),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum GyroPowerMode {
+    /// Normal mode
+    Normal = 0x00,
+    /// Deep suspend mode
+    DeepSuspend = 0x20,
+    /// Suspend mode
+    Suspend = 0x80,
+}
+
+impl TryFrom<u8> for GyroPowerMode {
+    type Error = Error<()>;
+
+    fn try_from(item: u8) -> Result<Self, Self::Error> {
+        match item {
+            0x00 => Ok(GyroPowerMode::Normal),
+            0x20 => Ok(GyroPowerMode::DeepSuspend),
+            0x80 => Ok(GyroPowerMode::Suspend),
+            _ => Err(Error::InvalidInputData),
+        }
+    }
 }
