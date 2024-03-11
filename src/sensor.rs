@@ -3,7 +3,7 @@ use crate::{
     reg::{AccRegisters, GyroRegisters},
     types::{
         AccConf, AccDrdyMap, AccPowerConf, AccPowerEnable, AccRange, AccelerometerConfig, ErrCode,
-        GyroRange, IntConfiguration, Sensor3DData,
+        GyroBandwidth, GyroRange, IntConfiguration, Sensor3DData,
     },
     Bmi088, Error,
 };
@@ -20,6 +20,7 @@ where
     ///
     /// - `Ok(u8)`: The chip ID value.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_chip_id(&mut self) -> Result<u8, Error<CommE>> {
         self.iface
             .read_register_acc(AccRegisters::ACC_CHIP_ID as u8)
@@ -33,6 +34,7 @@ where
     ///
     /// - `Ok(ErrCode)`: The error code.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_err_reg(&mut self) -> Result<ErrCode, Error<CommE>> {
         let err = self
             .iface
@@ -48,6 +50,7 @@ where
     ///
     /// - `Ok(bool)`: `true` if data is ready, `false` otherwise.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_status(&mut self) -> Result<bool, Error<CommE>> {
         let drdy = self
             .iface
@@ -64,6 +67,7 @@ where
     ///
     /// - `Ok(Sensor3DData)`: The 3D sensor data.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_data(&mut self) -> Result<Sensor3DData, Error<CommE>> {
         let mut data = [0xFF; 6];
         let reg = AccRegisters::ACC_DATA as u8;
@@ -85,6 +89,7 @@ where
     ///
     /// - `Ok(u32)`: The time value.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn sensor_time_24bit(&mut self) -> Result<u32, Error<CommE>> {
         let mut data = [0xFF; 4];
         let reg = AccRegisters::ACC_SENSORTIME as u8;
@@ -102,6 +107,7 @@ where
     /// # Returns
     ///
     /// - `u32`: The converted time in microseconds.
+    ///
     pub fn sensor_time_counts_to_us(counts: u32) -> u32 {
         let time = counts as u64 * 655360000 / ((1 << 23) - 1) as u64;
         time as u32
@@ -115,6 +121,7 @@ where
     ///
     /// - `Ok(bool)`: `true` if an interrupt is active
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_drdy(&mut self) -> Result<bool, Error<CommE>> {
         let reg = self
             .iface
@@ -130,6 +137,7 @@ where
     ///
     /// - `Ok(f32)`: The temperature value in degrees Celsius.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn temperature(&mut self) -> Result<f32, Error<CommE>> {
         let mut data = [0xFF, 0xFF];
         let reg = AccRegisters::TEMPERATURE as u8;
@@ -158,6 +166,7 @@ where
     ///
     /// - `Ok(())`: Success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     fn acc_conf_write(&mut self, conf: AccConf) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::ACC_CONF as u8;
         let res: u8 = 0b1000_0000; // reserved
@@ -178,6 +187,7 @@ where
     ///
     /// - `Ok(AccConf)`: Accelerometer conf value
     /// - `Err(Error<CommE>)`: Read Failure
+    ///
     fn acc_conf_read(&mut self) -> Result<AccConf, Error<CommE>> {
         let mut data = [0xFF];
         let reg = AccRegisters::ACC_CONF as u8;
@@ -192,6 +202,7 @@ where
     ///
     /// - `Ok(AccRange)`: Range value
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     fn acc_range_read(&mut self) -> Result<AccRange, Error<CommE>> {
         let mut data = [0xFF];
         let reg = AccRegisters::ACC_RANGE as u8;
@@ -210,6 +221,7 @@ where
     ///
     /// - `Ok(())`: Success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     fn acc_range_write(&mut self, range: AccRange) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::ACC_RANGE as u8;
         // [7:2] are reserved.
@@ -226,6 +238,7 @@ where
     ///
     /// - `Ok(AccelerometerConfig)`: Accelerometer configuration
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_configuration_read(&mut self) -> Result<AccelerometerConfig, Error<CommE>> {
         let conf = self.acc_conf_read()?;
         let range = self.acc_range_read()?;
@@ -246,6 +259,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn acc_configuration_write(
         &mut self,
         config: AccelerometerConfig,
@@ -262,6 +276,7 @@ where
     ///
     /// - `Ok(AccPowerConf)`: Power conf value
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_wake_suspend_read(&mut self) -> Result<AccPowerConf, Error<CommE>> {
         let reg = self
             .iface
@@ -280,6 +295,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn acc_wake_suspend_write(&mut self, conf: AccPowerConf) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::ACC_PWR_CONF as u8;
         let set = conf as u8;
@@ -295,6 +311,7 @@ where
     ///
     /// - `Ok(AccPowerEnable)`: Power enable value
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_enable_read(&mut self) -> Result<AccPowerEnable, Error<CommE>> {
         let reg = self
             .iface
@@ -313,6 +330,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn acc_enable_write(&mut self, enable: AccPowerEnable) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::ACC_PWR_CTRL as u8;
         let set = enable as u8;
@@ -327,6 +345,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn soft_reset(&mut self) -> Result<(), Error<CommE>> {
         let reg = 0xB6;
         self.iface
@@ -341,6 +360,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn init(&mut self, configuration: AccelerometerConfig) -> Result<(), Error<CommE>> {
         self.acc_configuration_write(configuration)?;
         self.acc_enable_write(AccPowerEnable::On)?;
@@ -354,6 +374,7 @@ where
     ///
     /// - `Ok(bool)`: `true` if an interrupt is active
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn acc_drdy1(&mut self) -> Result<bool, Error<CommE>> {
         let reg = self
             .iface
@@ -371,6 +392,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn int1_io_conf(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::INT1_IO_CONF as u8;
         let set = conf.into();
@@ -389,6 +411,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn int2_io_conf(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::INT2_IO_CONF as u8;
         let set = conf.into();
@@ -407,6 +430,7 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn acc_map_drdy(&mut self, map: AccDrdyMap) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::INT1_INT2_MAP_DATA as u8;
         let set = map as u8;
@@ -423,6 +447,7 @@ where
     ///
     /// - `Ok(u8)`: The chip ID value.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn gyro_chipid(&mut self) -> Result<u8, Error<CommE>> {
         self.iface
             .read_register_gyro(GyroRegisters::GYRO_CHIP_ID as u8)
@@ -434,6 +459,7 @@ where
     ///
     /// - `Ok(Sensor3DData)`: The 3D sensor data.
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn gyro_read_rate(&mut self) -> Result<Sensor3DData, Error<CommE>> {
         let mut data = [0xFF; 6];
         let reg = GyroRegisters::GYRO_RATE_DATA as u8;
@@ -451,6 +477,7 @@ where
     ///
     /// - `Ok(bool)`: `true` if an interrupt is active
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn gyro_drdy(&mut self) -> Result<bool, Error<CommE>> {
         let reg = self
             .iface
@@ -464,11 +491,11 @@ where
     ///
     /// - `Ok(GyroRange)`: Range value
     /// - `Err(Error<CommE>)`: Read failure
+    ///
     pub fn gyro_range_read(&mut self) -> Result<GyroRange, Error<CommE>> {
-        let mut data = [0xFF];
         let reg = GyroRegisters::GYRO_RANGE as u8;
-        self.iface.read_data_gyro(reg, &mut data)?;
-        let range = GyroRange::try_from(data[0]).map_err(|_| Error::InvalidInputData)?;
+        let data = self.iface.read_register_gyro(reg)?;
+        let range = GyroRange::try_from(data).map_err(|_| Error::InvalidInputData)?;
         Ok(range)
     }
 
@@ -482,9 +509,43 @@ where
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
+    ///
     pub fn gyro_range_write(&mut self, range: GyroRange) -> Result<(), Error<CommE>> {
         let reg = GyroRegisters::GYRO_RANGE as u8;
         let set = range as u8;
+        self.iface.write_register_gyro(reg, set)?;
+
+        Ok(())
+    }
+
+    /// Read gyro bandwidth (0x10)
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(GyroBandwidth)`: Bandwidth value
+    /// - `Err(Error<CommE>)`: Read failure
+    ///
+    pub fn gyro_bandwidth_read(&mut self) -> Result<GyroBandwidth, Error<CommE>> {
+        let reg = GyroRegisters::GYRO_BANDWIDTH as u8;
+        let data = self.iface.read_register_gyro(reg)?;
+        let bw = GyroBandwidth::try_from(data).map_err(|_| Error::InvalidInputData)?;
+        Ok(bw)
+    }
+
+    /// Write gyro bandwidth (0x10)
+    ///
+    /// # Arguments
+    ///
+    /// - `bw`: The gyro bandwidth to write.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn gyro_bandwidth_write(&mut self, bw: GyroBandwidth) -> Result<(), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_BANDWIDTH as u8;
+        let set = bw as u8;
         self.iface.write_register_gyro(reg, set)?;
 
         Ok(())
