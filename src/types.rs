@@ -53,10 +53,6 @@ impl TryFrom<u8> for AccPowerEnable {
     }
 }
 
-/// Sensor Status
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Status {}
-
 /// Accelerometer Error codes
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ErrCode {
