@@ -2,7 +2,8 @@ use crate::{
     interface::{ReadData, WriteData},
     reg::Registers,
     types::{
-        AccConf, AccPowerConf, AccPowerEnable, AccRange, AccelerometerConfig, ErrCode, Sensor3DData,
+        AccConf, AccDrdyMap, AccPowerConf, AccPowerEnable, AccRange, AccelerometerConfig, ErrCode,
+        IntConfiguration, Sensor3DData,
     },
     Bmi088, Error,
 };
@@ -207,7 +208,7 @@ where
     fn acc_range_write(&mut self, range: AccRange) -> Result<(), Error<CommE>> {
         let reg = Registers::ACC_RANGE as u8;
         // [7:2] are reserved.
-        let mut set = (range as u8) & 0b0000_0011; // [1:0]
+        let set = (range as u8) & 0b0000_0011; // [1:0]
         self.iface.write_register_acc(reg, set)?;
 
         Ok(())
@@ -339,6 +340,73 @@ where
         self.acc_configuration_write(configuration)?;
         self.acc_enable_write(AccPowerEnable::On)?;
         self.acc_wake_suspend_write(AccPowerConf::Active)?;
+        Ok(())
+    }
+
+    /// Accelerometer drdy status. (0x1D) Clears drdy interrupt
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(bool)`: `true` if an interrupt is active
+    /// - `Err(Error<CommE>)`: Read failure
+    pub fn acc_drdy1(&mut self) -> Result<bool, Error<CommE>> {
+        let reg = self
+            .iface
+            .read_register_acc(Registers::ACC_INT_STAT_1 as u8)?;
+        Ok((reg & 0b1000_0000) != 0)
+    }
+
+    /// Configure INT1 pin.
+    ///
+    /// # Arguments
+    ///
+    /// - `conf`: The interrupt configuration to write.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    pub fn int1_io_conf(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
+        let reg = Registers::INT1_IO_CONF as u8;
+        let set = conf.into();
+        let mut data = [reg, set];
+        self.iface.write_data_acc(&mut data)?;
+        Ok(())
+    }
+
+    /// Configure INT2 pin.
+    ///
+    /// # Arguments
+    ///
+    /// - `conf`: The interrupt configuration to write.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    pub fn int2_io_conf(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
+        let reg = Registers::INT2_IO_CONF as u8;
+        let set = conf.into();
+        let mut data = [reg, set];
+        self.iface.write_data_acc(&mut data)?;
+        Ok(())
+    }
+
+    /// Map data ready interrupt to output pin INT1 and/or INT2. (0x58)
+    ///
+    /// # Arguments
+    ///
+    /// - `map`: The interrupt configuration to write.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    pub fn acc_map_drdy(&mut self, map: AccDrdyMap) -> Result<(), Error<CommE>> {
+        let reg = Registers::INT1_INT2_MAP_DATA as u8;
+        let set = map as u8;
+        let mut data = [reg, set];
+        self.iface.write_data_acc(&mut data)?;
         Ok(())
     }
 }

@@ -196,3 +196,110 @@ pub struct AccelerometerConfig {
     /// Range
     pub acc_range: AccRange,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum IntPin {
+    /// Input
+    Input = 0b0001_0000,
+    /// Output
+    Output = 0b0000_1000,
+}
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum PinBehavior {
+    /// Push-pull
+    PushPull = 0b0000_0000,
+    /// Open-drain
+    OpenDrain = 0b0000_0100,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum PinActive {
+    /// Active high
+    ActiveHigh = 0b0000_0000,
+    /// Active low
+    ActiveLow = 0b0000_0010,
+}
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct IntConfiguration {
+    /// Input or output
+    pub int_pin: IntPin,
+    /// Push-pull or open-drain
+    pub int_od: PinBehavior,
+    /// Active high or active low
+    pub int_lvl: PinActive,
+}
+
+impl From<u8> for IntConfiguration {
+    fn from(item: u8) -> Self {
+        let int_pin = if (item & 0b0001_0000) != 0 {
+            IntPin::Input
+        } else {
+            IntPin::Output
+        };
+        let int_od = if (item & 0b0000_0100) != 0 {
+            PinBehavior::OpenDrain
+        } else {
+            PinBehavior::PushPull
+        };
+        let int_lvl = if (item & 0b0000_0010) != 0 {
+            PinActive::ActiveLow
+        } else {
+            PinActive::ActiveHigh
+        };
+        IntConfiguration {
+            int_pin,
+            int_od,
+            int_lvl,
+        }
+    }
+}
+
+impl From<&IntConfiguration> for u8 {
+    fn from(item: &IntConfiguration) -> Self {
+        let mut value = 0;
+        match item.int_pin {
+            IntPin::Input => value |= 0b0001_0000,
+            IntPin::Output => value |= 0b0000_0000,
+        }
+        match item.int_od {
+            PinBehavior::PushPull => value |= 0b0000_0000,
+            PinBehavior::OpenDrain => value |= 0b0000_0100,
+        }
+        match item.int_lvl {
+            PinActive::ActiveHigh => value |= 0b0000_0000,
+            PinActive::ActiveLow => value |= 0b0000_0010,
+        }
+        value
+    }
+}
+
+impl Into<u8> for IntConfiguration {
+    fn into(self) -> u8 {
+        let mut value = 0;
+        match self.int_pin {
+            IntPin::Input => value |= 0b0001_0000,
+            IntPin::Output => value |= 0b0000_0000,
+        }
+        match self.int_od {
+            PinBehavior::PushPull => value |= 0b0000_0000,
+            PinBehavior::OpenDrain => value |= 0b0000_0100,
+        }
+        match self.int_lvl {
+            PinActive::ActiveHigh => value |= 0b0000_0000,
+            PinActive::ActiveLow => value |= 0b0000_0010,
+        }
+        value
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AccDrdyMap {
+    /// Map data ready to neither pin
+    None = 0b0000_0000,
+    /// Map data ready interrupt to output pin INT1
+    Int1 = 0b0000_0100,
+    /// Map data ready interrupt to output pin INT2
+    Int2 = 0b0100_0000,
+    /// Map data ready interrupt to output pin INT1 and INT2
+    Int1Int2 = 0b0100_0100,
+}
