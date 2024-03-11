@@ -23,6 +23,10 @@ include = [
 [dependencies]
 embedded-hal = "1.0.0"
 
+
+defmt = "0.3"
+defmt-rtt = "0.4"
+
 # Necessary to load the example code.
 [dev-dependencies]
 cortex-m = { version = "0.7", features = ["critical-section-single-core"]}

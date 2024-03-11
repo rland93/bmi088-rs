@@ -1,3 +1,7 @@
+// ignore case warnings
+#![allow(non_camel_case_types)]
+#[derive(Debug, Clone, Copy, PartialEq)]
+
 pub enum Registers {
     /// Accelerometer Chip ID
     ACC_CHIP_ID = 0x00,
@@ -5,19 +9,19 @@ pub enum Registers {
     ACC_ERR_REG = 0x02,
     /// Sensor status flag
     ACC_STATUS = 0x03,
+    /// Acceleration data (0x12-0x17)
+    ACC_DATA = 0x12,
+    /// Sensortime data (0x18-0x1A)
+    ACC_SENSORTIME = 0x18,
     /// Interrupt status register
     ACC_INT_STAT_1 = 0x1D,
+    /// Temperature data register (0x22-0x23)
+    TEMPERATURE = 0x22,
     /// Accelerometer configuration register
     ACC_CONF = 0x40,
     /// Accelerometer range setting
     ACC_RANGE = 0x41,
-    /// Reduction of sample rate
-    FIFO_DOWNS = 0x45,
-    /// Sets the FIFO Mode
-    FIFO_CONFIG_0 = 0x48,
-    /// Select sources for the FIFO buffer
-    FIFO_CONFIG_1 = 0x49,
-    /// Configures the input/output pin INT1
+    /// Configures the input/output pin INT1.
     INT1_IO_CONF = 0x53,
     /// Configures the input/output pin INT2.
     INT2_IO_CONF = 0x54,
