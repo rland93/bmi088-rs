@@ -11,13 +11,13 @@ use stm32f4xx_hal::{i2c::I2c1, prelude::*};
 #[entry]
 fn main() -> ! {
     let dp = stm32f4xx_hal::pac::Peripherals::take().unwrap();
-    let cp = cortex_m::Peripherals::take().unwrap();
+    let _cp = cortex_m::Peripherals::take().unwrap();
 
     let rcc = dp.RCC.constrain();
     let clocks = rcc.cfgr.freeze();
 
     let gpiob = dp.GPIOB.split();
-    let gpioc = dp.GPIOC.split();
+    let _gpioc = dp.GPIOC.split(); // for interrupts, when those are implemented
 
     info!("i2c");
     let i2c1_scl = gpiob.pb6.into_alternate_open_drain();

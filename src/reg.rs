@@ -27,10 +27,10 @@ pub enum AccRegisters {
     INT2_IO_CONF = 0x54,
     /// Map data ready interrupt to output pin INT1 and/or INT2
     INT1_INT2_MAP_DATA = 0x58,
-    /// Enables the sensor self-test signal, occurring as a steady offset to the
-    /// sensor output. Note that the self-test needs to be switched off actively
-    /// by the user (details see 4.6.1).
-    ACC_SELF_TEST = 0x6D,
+    // Enables the sensor self-test signal, occurring as a steady offset to the
+    // sensor output. Note that the self-test needs to be switched off actively
+    // by the user (details see 4.6.1).
+    // ACC_SELF_TEST = 0x6D,
     /// Switches accelerometer into suspend mode for saving power. In this mode
     /// the data acquisition is
     ACC_PWR_CONF = 0x7C,
@@ -66,6 +66,6 @@ pub enum GyroRegisters {
     GYRO_INT3_INT4_IO_CONF = 0x16,
     /// Map data ready interrupt to output pin INT3 and/or INT4
     GYRO_INT3_INT4_IO_MAP = 0x18,
-    /// Built-in self-test of gyroscope.
-    GYRO_SELF_TEST = 0x3C,
+    // Built-in self-test of gyroscope.
+    // GYRO_SELF_TEST = 0x3C,
 }
