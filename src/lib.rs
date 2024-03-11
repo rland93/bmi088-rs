@@ -12,9 +12,9 @@ const I2C_ACC_ALT_ADDR: u8 = 0x19;
 const I2C_GYRO_BASE_ADDR: u8 = 0x68;
 const I2C_GYRO_ALT_ADDR: u8 = 0x69;
 
-mod accelerometer;
 pub mod interface;
 mod reg;
+mod sensor;
 mod types;
 
 pub use crate::interface::Addr;
