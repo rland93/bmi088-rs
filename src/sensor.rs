@@ -3,7 +3,8 @@ use crate::{
     reg::{AccRegisters, GyroRegisters},
     types::{
         AccConf, AccDrdyMap, AccPowerConf, AccPowerEnable, AccRange, AccelerometerConfig, ErrCode,
-        GyroBandwidth, GyroRange, IntConfiguration, Sensor3DData,
+        GyroBandwidth, GyroPowerMode, GyroRange, IntConfiguration, PinActive, PinBehavior,
+        Sensor3DData,
     },
     Bmi088, Error,
 };
@@ -548,6 +549,178 @@ where
         let set = bw as u8;
         self.iface.write_register_gyro(reg, set)?;
 
+        Ok(())
+    }
+
+    /// Read gyro power mode (0x11)
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(GyroPowerMode)`: Power mode value
+    /// - `Err(Error<CommE>)`: Read failure
+    ///
+    pub fn gyro_power_mode_read(&mut self) -> Result<GyroPowerMode, Error<CommE>> {
+        let reg = GyroRegisters::GYRO_LPM1 as u8;
+        let data = self.iface.read_register_gyro(reg)?;
+        let mode = GyroPowerMode::try_from(data).map_err(|_| Error::InvalidInputData)?;
+        Ok(mode)
+    }
+
+    /// Write gyro power mode (0x11)
+    ///
+    /// # Arguments
+    ///
+    /// - `mode`: The gyro power mode to write.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn gyro_power_mode_write(&mut self, mode: GyroPowerMode) -> Result<(), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_LPM1 as u8;
+        let set = mode as u8;
+        self.iface.write_register_gyro(reg, set)?;
+
+        Ok(())
+    }
+
+    /// Perform a soft reset of the gyroscope. (0x14)
+    /// Be sure to wait 30ms after reset before accessing the gyro.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn gyro_reset(&mut self) -> Result<(), Error<CommE>> {
+        let reg = 0xB6;
+        self.iface
+            .write_register_gyro(GyroRegisters::GYRO_SOFTRESET as u8, reg)?;
+        Ok(())
+    }
+
+    /// Enable data ready interrupt on the gyro. (0x15)
+    ///
+    /// # Arguments
+    ///
+    /// - `enable`: `true` to enable, `false` to disable
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn gyro_drdy_en(&mut self, enable: bool) -> Result<(), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_INT_CTRL as u8;
+        let set = if enable { 0x80 } else { 0x00 };
+        self.iface.write_register_gyro(reg, set)?;
+        Ok(())
+    }
+
+    /// Read interrupt 4 configuration (0x16)
+    ///
+    /// # Returns
+    ///
+    /// - `Ok((PinActive, PinBehavior))`: The pin active and behavior
+    /// - `Err(Error<CommE>)`: Read failure
+    ///
+    pub fn gyro_conf_int4_read(&mut self) -> Result<(PinActive, PinBehavior), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_INT3_INT4_IO_CONF as u8;
+        let data = self.iface.read_register_gyro(reg)?;
+        let active = if data & 0b0000_0100 != 0 {
+            PinActive::ActiveHigh
+        } else {
+            PinActive::ActiveLow
+        };
+        let behavior = if data & 0b0000_1000 != 0 {
+            PinBehavior::OpenDrain
+        } else {
+            PinBehavior::PushPull
+        };
+        Ok((active, behavior))
+    }
+
+    /// Write interrupt 4 configuration (0x16)
+    ///
+    /// # Arguments
+    ///
+    /// - `active`: The pin active state
+    /// - `behavior`: The pin behavior
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn gyro_conf_int4_write(
+        &mut self,
+        active: PinActive,
+        behavior: PinBehavior,
+    ) -> Result<(), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_INT3_INT4_IO_CONF as u8;
+        let set = match active {
+            PinActive::ActiveHigh => 0b0000_0100,
+            PinActive::ActiveLow => 0b0000_0000,
+        } | match behavior {
+            PinBehavior::PushPull => 0b0000_0000,
+            PinBehavior::OpenDrain => 0b0000_1000,
+        };
+        self.iface.write_register_gyro(reg, set)?;
+        Ok(())
+    }
+
+    /// Read interrupt 3 configuration (0x16)
+    /// This is the same register as interrupt 3.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok((PinActive, PinBehavior))`: The pin active and behavior
+    /// - `Err(Error<CommE>)`: Read failure
+    ///
+    pub fn gyro_conf_int3_read(&mut self) -> Result<(PinActive, PinBehavior), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_INT3_INT4_IO_CONF as u8;
+        let data = self.iface.read_register_gyro(reg)?;
+        let active = if data & 0b0000_0001 != 0 {
+            PinActive::ActiveHigh
+        } else {
+            PinActive::ActiveLow
+        };
+        let behavior = if data & 0b0000_0010 != 0 {
+            PinBehavior::OpenDrain
+        } else {
+            PinBehavior::PushPull
+        };
+        Ok((active, behavior))
+    }
+
+    /// Write interrupt 3 configuration (0x16)
+    /// This is the same register as interrupt 3.
+    ///
+    /// # Arguments
+    ///
+    /// - `active`: The pin active state
+    /// - `behavior`: The pin behavior
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(())`: Write success
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn gyro_conf_int3_write(
+        &mut self,
+        active: PinActive,
+        behavior: PinBehavior,
+    ) -> Result<(), Error<CommE>> {
+        let reg = GyroRegisters::GYRO_INT3_INT4_IO_CONF as u8;
+        let set = match active {
+            PinActive::ActiveHigh => 0b0000_0001,
+            PinActive::ActiveLow => 0b0000_0000,
+        } | match behavior {
+            PinBehavior::PushPull => 0b0000_0000,
+            PinBehavior::OpenDrain => 0b0000_0010,
+        };
+        self.iface.write_register_gyro(reg, set)?;
         Ok(())
     }
 }
