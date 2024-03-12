@@ -203,6 +203,7 @@ pub struct AccelerometerConfig {
     pub acc_range: AccRange,
 }
 
+/// Input pin configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum IntPin {
     /// Input
@@ -210,6 +211,8 @@ pub enum IntPin {
     /// Output
     Output = 0b0000_1000,
 }
+
+/// Pin behavior configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PinBehavior {
     /// Push-pull
@@ -218,6 +221,7 @@ pub enum PinBehavior {
     OpenDrain = 0b0000_0100,
 }
 
+/// Pin active configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PinActive {
     /// Active high
@@ -225,6 +229,8 @@ pub enum PinActive {
     /// Active low
     ActiveLow = 0b0000_0010,
 }
+
+/// Struct to hold the configuration of an input pin
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct IntConfiguration {
     /// Input or output
@@ -310,6 +316,7 @@ pub enum AccDrdyMap {
     Int1Int2 = 0b0100_0100,
 }
 
+/// Gyroscope range configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GyroRange {
     /// ±2000°/s
@@ -339,6 +346,7 @@ impl TryFrom<u8> for GyroRange {
     }
 }
 
+/// Gyroscope bandwidth configuration
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GyroBandwidth {
     /// 532 Hz, ODR 2000 Hz
@@ -377,6 +385,7 @@ impl TryFrom<u8> for GyroBandwidth {
     }
 }
 
+/// Gyroscope power mode
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GyroPowerMode {
     /// Normal mode
@@ -400,6 +409,7 @@ impl TryFrom<u8> for GyroPowerMode {
     }
 }
 
+/// Gyroscope data ready interrupt mapping
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GyroDrdyMap {
     /// Map data ready to neither pin

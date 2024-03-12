@@ -529,7 +529,9 @@ where
     pub fn gyro_bandwidth_read(&mut self) -> Result<GyroBandwidth, Error<CommE>> {
         let reg = GyroRegisters::GYRO_BANDWIDTH as u8;
         let data = self.iface.read_register_gyro(reg)?;
-        let bw = GyroBandwidth::try_from(data).map_err(|_| Error::InvalidInputData)?;
+        // Note: bit #7 is read-only and always ‚1‘, but has no function and can safely be ignored.
+        let data_masked = data & 0b0111_1111;
+        let bw = GyroBandwidth::try_from(data_masked).map_err(|_| Error::InvalidInputData)?;
         Ok(bw)
     }
 

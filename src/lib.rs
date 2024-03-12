@@ -20,7 +20,8 @@ mod types;
 pub use crate::interface::Addr;
 pub use crate::types::{
     AccBandwidth, AccConf, AccDataRate, AccPowerConf, AccPowerEnable, AccRange,
-    AccelerometerConfig, ErrCode, Error, Sensor3DData,
+    AccelerometerConfig, ErrCode, Error, GyroBandwidth, GyroDrdyMap, GyroPowerMode, GyroRange,
+    IntConfiguration, IntPin, PinActive, PinBehavior, Sensor3DData,
 };
 
 /// BMI088 device object.

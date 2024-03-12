@@ -27,16 +27,7 @@ fn main() -> ! {
     // initialize the sensor
     let mut sensor = Bmi088::new_with_i2c(i2c1, false, false);
 
-    // choose accelerometer or gyroscope test.
-    let acc_test = true;
-
-    while acc_test {
-        // TEST: Power on reset
-        // --------------------
-        info!("Reset...");
-        sensor.soft_reset().unwrap();
-        cortex_m::asm::delay(500_000);
-
+    loop {
         // TEST: successful read of chip ID
         // --------------------------------
         info!("Reading chip ID");
@@ -125,9 +116,44 @@ fn main() -> ! {
         let status = sensor.acc_status().unwrap();
         debug!("Status register: status={:?}", status);
 
-        info!("END TEST-----------------------------");
+        info!("Chip ID");
+        let id = sensor.gyro_chipid().unwrap();
+        debug!("Chip ID: {:x}", id);
 
-        cortex_m::asm::delay(500_000);
+        info!("Bandwidth");
+        let bw = bmi088::GyroBandwidth::Hz32;
+        sensor.gyro_bandwidth_write(bw).unwrap();
+        let readback_bw = sensor.gyro_bandwidth_read().unwrap();
+        assert!(bw == readback_bw);
+
+        info!("Range");
+        let range = bmi088::GyroRange::Dps2000;
+        sensor.gyro_range_write(range).unwrap();
+        let readback_range = sensor.gyro_range_read().unwrap();
+        assert!(range == readback_range);
+
+        info!("Power mode");
+        let power = bmi088::GyroPowerMode::Normal;
+        sensor.gyro_power_mode_write(power).unwrap();
+        let readback_power = sensor.gyro_power_mode_read().unwrap();
+        assert!(power == readback_power);
+
+        info!("Data ready interrupt mapping");
+        let pin_active = bmi088::PinActive::ActiveHigh;
+        let pin_behavior = bmi088::PinBehavior::PushPull;
+
+        sensor
+            .gyro_conf_int3_write(pin_active, pin_behavior)
+            .unwrap();
+        let (rb_active, rb_beh) = sensor.gyro_conf_int3_read().unwrap();
+        assert!(pin_active == rb_active);
+        assert!(pin_behavior == rb_beh);
+
+        info!("Reading gyroscope data");
+        let values = sensor.gyro_read_rate().unwrap();
+        debug!(
+            "Gyroscope data: [{:?} {:?} {:?}]",
+            values.x, values.y, values.z
+        );
     }
-    panic!();
 }
