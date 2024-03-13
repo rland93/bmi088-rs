@@ -1,5 +1,6 @@
 // ignore case warnings
 #![allow(non_camel_case_types)]
+#![allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 
 pub enum AccRegisters {
@@ -43,6 +44,7 @@ pub enum AccRegisters {
     ACC_SOFTRESET = 0x7E,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GyroRegisters {
     /// Gyro ChipID
     GYRO_CHIP_ID = 0x00,

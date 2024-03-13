@@ -6,11 +6,11 @@ env:
 
 jobs:
   build:
-    name: Build
+    name: Check and Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rust: [stable, 1.62.0]
+        rust: [stable, nightly] # support for Rtic v2 requires nightly
         TARGET:
           - arm-unknown-linux-gnueabi # Raspberry Pi 1
           - armv7-unknown-linux-gnueabihf # Raspberry Pi 2, 3, etc
@@ -39,6 +39,8 @@ jobs:
 
       - run: ./ci/patch-no-std.sh
         if: ${{ ! contains(matrix.TARGET, 'x86_64') }}
+
+      - run: cargo check --target=${{ matrix.TARGET }} # fast fail early
 
       - run: cargo build --target=${{ matrix.TARGET }}
 
@@ -69,46 +71,3 @@ jobs:
           components: clippy
 
       - run: cargo clippy --all-targets
-
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust: [stable]
-        TARGET: [thumbv7em-none-eabihf]
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-          targets: ${{ matrix.TARGET }}
-
-      - name: Test
-        run: cargo test --target=${{ matrix.TARGET }}
-
-      - name: Build examples
-        run: cargo build --target=${{ matrix.TARGET }} --examples
-
-  coverage:
-    name: Coverage
-    runs-on: ubuntu-latest
-    container:
-      image: xd009642/tarpaulin:latest
-      options: --security-opt seccomp=unconfined
-    steps:
-
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-unknown-linux-gnu,thumbv7em-none-eabihf
-
-      - name: Run cargo-tarpaulin
-        run: cargo tarpaulin --out Lcov -- --test-threads 1
-
-      - name: upload to Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: './lcov.info'

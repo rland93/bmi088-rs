@@ -42,20 +42,18 @@ impl<I2C> Bmi088<interface::I2cInterface<I2C>> {
     /// Create new instance of the BMI088 device communicating through I2C.
     pub fn new_with_i2c(i2c: I2C, acc_alt: bool, gyro_alt: bool) -> Self {
         // gyro, accelerometer are addressed separately.
-        let acc_addr;
-        let gyro_addr;
 
-        if !acc_alt {
-            acc_addr = Addr::Acc(I2C_ACC_BASE_ADDR);
+        let acc_addr = if !acc_alt {
+            Addr::Acc(I2C_ACC_BASE_ADDR)
         } else {
-            acc_addr = Addr::Acc(I2C_ACC_ALT_ADDR);
-        }
+            Addr::Acc(I2C_ACC_ALT_ADDR)
+        };
 
-        if !gyro_alt {
-            gyro_addr = Addr::Gyro(I2C_GYRO_BASE_ADDR);
+        let gyro_addr = if !gyro_alt {
+            Addr::Gyro(I2C_GYRO_BASE_ADDR)
         } else {
-            gyro_addr = Addr::Gyro(I2C_GYRO_ALT_ADDR);
-        }
+            Addr::Gyro(I2C_GYRO_ALT_ADDR)
+        };
 
         Bmi088 {
             iface: interface::I2cInterface {

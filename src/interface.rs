@@ -90,7 +90,7 @@ pub trait ReadData: private::Sealed {
     fn read_data_acc(&mut self, register: u8, payload: &mut [u8]) -> Result<(), Self::Error>;
     /// Read an u8 `register` on the gyro
     fn read_register_gyro(&mut self, register: u8) -> Result<u8, Self::Error>;
-    /// Read some `payload` data from the gyro from `register`
+    /// Read some `payload` data from the gyro from
     fn read_data_gyro(&mut self, register: u8, payload: &mut [u8]) -> Result<(), Self::Error>;
 }
 
@@ -102,11 +102,11 @@ where
     fn read_register_acc(&mut self, register: u8) -> Result<u8, Self::Error> {
         let addr = self.acc_addr;
 
-        let mut write = [register];
+        let write = [register];
         let mut read = [0xFF];
 
         self.i2c
-            .write_read(addr, &mut write, &mut read)
+            .write_read(addr, &write, &mut read)
             .map_err(Error::Comm)
             .and(Ok(read[0]))
     }
@@ -122,11 +122,11 @@ where
     fn read_register_gyro(&mut self, register: u8) -> Result<u8, Self::Error> {
         let addr = self.gyro_addr;
 
-        let mut write = [register];
+        let write = [register];
         let mut read = [0xFF];
 
         self.i2c
-            .write_read(addr, &mut write, &mut read)
+            .write_read(addr, &write, &mut read)
             .map_err(Error::Comm)
             .and(Ok(read[0]))
     }

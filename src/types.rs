@@ -285,18 +285,18 @@ impl From<&IntConfiguration> for u8 {
     }
 }
 
-impl Into<u8> for IntConfiguration {
-    fn into(self) -> u8 {
+impl From<IntConfiguration> for u8 {
+    fn from(val: IntConfiguration) -> Self {
         let mut value = 0;
-        match self.int_pin {
+        match val.int_pin {
             IntPin::Input => value |= 0b0001_0000,
             IntPin::Output => value |= 0b0000_0000,
         }
-        match self.int_od {
+        match val.int_od {
             PinBehavior::PushPull => value |= 0b0000_0000,
             PinBehavior::OpenDrain => value |= 0b0000_0100,
         }
-        match self.int_lvl {
+        match val.int_lvl {
             PinActive::ActiveHigh => value |= 0b0000_0000,
             PinActive::ActiveLow => value |= 0b0000_0010,
         }
