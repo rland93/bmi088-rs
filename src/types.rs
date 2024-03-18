@@ -1,5 +1,3 @@
-use core::convert::TryFrom;
-
 /// BMI088 errors.
 #[derive(Debug)]
 pub enum Error<CommE> {

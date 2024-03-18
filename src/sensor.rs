@@ -72,9 +72,7 @@ where
     pub fn acc_data(&mut self) -> Result<Sensor3DData, Error<CommE>> {
         let mut data = [0xFF; 6];
         let reg = AccRegisters::ACC_DATA as u8;
-        defmt::debug!("{:?}", data);
         self.iface.read_data_acc(reg, &mut data)?;
-        defmt::debug!("{:?}", data);
         Ok(Sensor3DData {
             x: i16::from_be_bytes([data[1], data[0]]),
             y: i16::from_be_bytes([data[3], data[2]]),
