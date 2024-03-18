@@ -18,14 +18,24 @@ fn main() -> ! {
 
     let gpiob = dp.GPIOB.split();
     let _gpioc = dp.GPIOC.split(); // for interrupts, when those are implemented
+    let mut delay = dp.TIM2.delay_ms(&clocks);
 
     info!("i2c");
     let i2c1_scl = gpiob.pb6.into_alternate_open_drain();
     let i2c1_sda = gpiob.pb7.into_alternate_open_drain();
-    let i2c1 = I2c1::new(dp.I2C1, (i2c1_scl, i2c1_sda), 400.kHz(), &clocks);
+    let i2c1 = I2c1::new(dp.I2C1, (i2c1_scl, i2c1_sda), 100.kHz(), &clocks);
 
     // initialize the sensor
     let mut sensor = Bmi088::new_with_i2c(i2c1, false, false);
+
+    // Perform resets
+    info!("Accelerometer soft reset");
+    sensor.acc_soft_reset().unwrap();
+    delay.delay_ms(5);
+
+    info!("Gyro soft reset");
+    sensor.gyro_soft_reset().unwrap();
+    delay.delay_ms(50);
 
     loop {
         // TEST: successful read of chip ID

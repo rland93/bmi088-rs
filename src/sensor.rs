@@ -342,12 +342,14 @@ where
 
     /// Soft Reset (0x7E)
     ///
+    /// Sensortec recommends a delay of 1ms after a soft reset of the sensor.
+    ///
     /// # Returns
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
     ///
-    pub fn soft_reset(&mut self) -> Result<(), Error<CommE>> {
+    pub fn acc_soft_reset(&mut self) -> Result<(), Error<CommE>> {
         let reg = 0xB6;
         self.iface
             .write_register_acc(AccRegisters::ACC_SOFTRESET as u8, reg)?;
@@ -588,14 +590,14 @@ where
     }
 
     /// Perform a soft reset of the gyroscope. (0x14)
-    /// Be sure to wait 30ms after reset before accessing the gyro.
+    /// Sensortec recommends a delay of 30ms after resetting the gyro.
     ///
     /// # Returns
     ///
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
     ///
-    pub fn gyro_reset(&mut self) -> Result<(), Error<CommE>> {
+    pub fn gyro_soft_reset(&mut self) -> Result<(), Error<CommE>> {
         let reg = 0xB6;
         self.iface
             .write_register_gyro(GyroRegisters::GYRO_SOFTRESET as u8, reg)?;
