@@ -302,6 +302,7 @@ impl From<IntConfiguration> for u8 {
     }
 }
 
+/// Data ready map for accelerometer interrupt
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AccDrdyMap {
     /// Map data ready to neither pin
