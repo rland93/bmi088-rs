@@ -14,4 +14,4 @@ target = "thumbv7em-none-eabihf"
 DEFMT_LOG = "trace"
 
 [target.'cfg(all(target_arch = "arm", target_os = "none"))']
-runner = "probe-rs run --chip STM32F411RETx"
+runner = "probe-run --chip STM32F401RCTx"

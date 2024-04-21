@@ -36,6 +36,7 @@ mod private {
     pub trait Sealed {}
 
     impl<I2C> Sealed for interface::I2cInterface<I2C> {}
+    impl<SPI> Sealed for interface::SpiInterface<SPI> {}
 }
 
 impl<I2C> Bmi088<interface::I2cInterface<I2C>> {
@@ -67,5 +68,14 @@ impl<I2C> Bmi088<interface::I2cInterface<I2C>> {
     /// Destroy driver instance, return I2C device instance.
     pub fn destroy(self) -> I2C {
         self.iface.i2c
+    }
+}
+
+impl<SPI> Bmi088<interface::SpiInterface<SPI>> {
+    /// Create new instance of the BMI088 device communicating through SPI.
+    pub fn new_with_spi(spi: SPI) -> Self {
+        Self {
+            iface: interface::SpiInterface { spi },
+        }
     }
 }

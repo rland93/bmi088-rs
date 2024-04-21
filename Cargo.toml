@@ -25,9 +25,12 @@ embedded-hal = "1.0.0"
 
 # Necessary to load the example code.
 [dev-dependencies]
+embedded-hal-bus = "0.1"
 defmt = "0.3"
 defmt-rtt = "0.4"
 cortex-m = { version = "0.7", features = ["critical-section-single-core"]}
 cortex-m-rt = "0.7"
-stm32f4xx-hal = {version = "0.20", features = ["stm32f411"]}
+# For the i2c example, we need to use the stm32f411 feature.
+# For the spi example, we need to use the stm32f401 feature.
+stm32f4xx-hal = {version = "0.20", features = ["stm32f401"]}
 panic-probe = {version = "0.3", features = ["print-defmt"]}
