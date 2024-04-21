@@ -10,7 +10,7 @@ Thank you to [@eldruin](https://github.com/eldruin/bmi160-rs). The design of thi
 
 - Interfaces
   - [x] I2C
-  - [ ] SPI
+  - [x] SPI
 
 - Accelerometer
   - [x] Error/Status Registers
@@ -40,10 +40,17 @@ Thank you to [@eldruin](https://github.com/eldruin/bmi160-rs). The design of thi
  
 ## Example Code
 
-There is one example, in examples/stm32f411.rs. 
+There are two examples: 
 
-That is also the hardware test code.
+- examples/stm32f411-i2c.rs
+- examples/stm32f401-spi.rs
 
-The example code can be built on an STM32F411RETx "Black Pill" board: https://stm32-base.org/boards/STM32F411CEU6-WeAct-Black-Pill-V2.0.html. Connect the sensor to i2c1. 
+Those are also the hardware test code.
+
+You can run them with any probe-rs compatible debug probe.
+
+The i2c example code can be built on an STM32F411RETx "Black Pill" board: https://stm32-base.org/boards/STM32F411CEU6-WeAct-Black-Pill-V2.0.html. Connect the sensor to i2c1. 
+
+I am not sure if there is a similarly cheap/easily accessible STM32F401 based dev board but you can modify the example to suit your needs. Be sure to modify memory.x and .cargo/config.toml.
 
 Or any other STM32 hardware can be used with minor modifications to the target, memory.x, and probe-rs settings.
