@@ -22,7 +22,7 @@ where
     /// - `Ok(u8)`: The chip ID value.
     /// - `Err(Error<CommE>)`: Read failure
     ///
-    pub fn acc_chip_id(&mut self) -> Result<u8, Error<CommE>> {
+    pub fn acc_chipid(&mut self) -> Result<u8, Error<CommE>> {
         self.iface
             .read_register_acc(AccRegisters::ACC_CHIP_ID as u8)
     }
