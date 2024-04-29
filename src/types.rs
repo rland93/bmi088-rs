@@ -271,7 +271,7 @@ impl From<&IntConfiguration> for u8 {
         let mut value = 0;
         match item.int_pin {
             IntPin::Input => value |= 0b0001_0000,
-            IntPin::Output => value |= 0b0000_0000,
+            IntPin::Output => value |= 0b0000_1000,
         }
         match item.int_od {
             PinBehavior::PushPull => value |= 0b0000_0000,
@@ -290,7 +290,7 @@ impl From<IntConfiguration> for u8 {
         let mut value = 0;
         match val.int_pin {
             IntPin::Input => value |= 0b0001_0000,
-            IntPin::Output => value |= 0b0000_0000,
+            IntPin::Output => value |= 0b0000_1000,
         }
         match val.int_od {
             PinBehavior::PushPull => value |= 0b0000_0000,
@@ -315,6 +315,18 @@ pub enum AccDrdyMap {
     Int2 = 0b0100_0000,
     /// Map data ready interrupt to output pin INT1 and INT2
     Int1Int2 = 0b0100_0100,
+}
+
+impl From<u8> for AccDrdyMap {
+    fn from(item: u8) -> Self {
+        match item {
+            0b0000_0000 => AccDrdyMap::None,
+            0b0000_0100 => AccDrdyMap::Int1,
+            0b0100_0000 => AccDrdyMap::Int2,
+            0b0100_0100 => AccDrdyMap::Int1Int2,
+            _ => AccDrdyMap::None,
+        }
+    }
 }
 
 /// Gyroscope range configuration

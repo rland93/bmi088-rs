@@ -383,7 +383,7 @@ where
         Ok((reg & 0b1000_0000) != 0)
     }
 
-    /// Configure INT1 pin.
+    /// Write INT1 pin configuration
     ///
     /// # Arguments
     ///
@@ -394,12 +394,25 @@ where
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
     ///
-    pub fn int1_io_conf(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
+    pub fn int1_io_conf_write(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::INT1_IO_CONF as u8;
         let set = conf.into();
         let mut data = [reg, set];
         self.iface.write_data_acc(&mut data)?;
         Ok(())
+    }
+
+    /// Read configuration of INT1 pin.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(IntConfiguration)`: Interrupt configuration
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn int1_io_conf_read(&mut self) -> Result<IntConfiguration, Error<CommE>> {
+        let reg = AccRegisters::INT1_IO_CONF as u8;
+        let data = self.iface.read_register_acc(reg)?;
+        Ok(IntConfiguration::from(data))
     }
 
     /// Configure INT2 pin.
@@ -413,7 +426,7 @@ where
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
     ///
-    pub fn int2_io_conf(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
+    pub fn int2_io_conf_write(&mut self, conf: IntConfiguration) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::INT2_IO_CONF as u8;
         let set = conf.into();
         let mut data = [reg, set];
@@ -421,7 +434,20 @@ where
         Ok(())
     }
 
-    /// Map data ready interrupt to output pin INT1 and/or INT2. (0x58)
+    /// Read configuration of INT2 pin.
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(IntConfiguration)`: Interrupt configuration
+    /// - `Err(Error<CommE>)`: Write failure
+    ///
+    pub fn int2_io_conf_read(&mut self) -> Result<IntConfiguration, Error<CommE>> {
+        let reg = AccRegisters::INT2_IO_CONF as u8;
+        let data = self.iface.read_register_acc(reg)?;
+        Ok(IntConfiguration::from(data))
+    }
+
+    /// Write Map data ready interrupt to output pin INT1 and/or INT2. (0x58)
     ///
     /// # Arguments
     ///
@@ -432,12 +458,25 @@ where
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
     ///
-    pub fn acc_map_drdy(&mut self, map: AccDrdyMap) -> Result<(), Error<CommE>> {
+    pub fn acc_map_drdy_write(&mut self, map: AccDrdyMap) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::INT1_INT2_MAP_DATA as u8;
         let set = map as u8;
         let mut data = [reg, set];
         self.iface.write_data_acc(&mut data)?;
         Ok(())
+    }
+
+    /// Read Map data ready interrupt to output pin INT1 and/or INT2. (0x58)
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(AccDrdyMap)`: The interrupt configuration
+    /// - `Err(Error<CommE>)`: Read failure
+    ///
+    pub fn acc_map_drdy_read(&mut self) -> Result<AccDrdyMap, Error<CommE>> {
+        let reg = AccRegisters::INT1_INT2_MAP_DATA as u8;
+        let data = self.iface.read_register_acc(reg)?;
+        Ok(AccDrdyMap::from(data))
     }
 
     /*     GYRO REGISTERS      */
