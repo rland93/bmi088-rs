@@ -68,9 +68,9 @@ fn main() -> ! {
     loop {
         // TEST: successful read of chip ID
         // --------------------------------
-        info!("Reading chip ID");
-        let id = acc_dev.acc_chip_id().unwrap();
-        debug!("Chip ID: {:x}", id);
+        info!("Reading acc chip ID");
+        let id = acc_dev.acc_chipid().unwrap();
+        debug!("Chip ID: {:02x}", id);
 
         // TEST: successful write and read back of configuration
         // ----------------------------------------------------
