@@ -31,12 +31,14 @@ impl TryFrom<u8> for AccPowerConf {
 }
 
 /// Accelerometer Power Enable
+/// 0x00 Accelerometer off
+//  0x04 Accelerometer on
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AccPowerEnable {
     /// Power off
-    Off = 0x04,
+    Off = 0x00,
     /// Power on
-    On = 0x00,
+    On = 0x04,
 }
 
 impl TryFrom<u8> for AccPowerEnable {
