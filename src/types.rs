@@ -34,9 +34,9 @@ impl TryFrom<u8> for AccPowerConf {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AccPowerEnable {
     /// Power off
-    Off = 0x00,
+    Off = 0x04,
     /// Power on
-    On = 0x04,
+    On = 0x00,
 }
 
 impl TryFrom<u8> for AccPowerEnable {
