@@ -19,7 +19,7 @@ mod types;
 
 pub use crate::interface::Addr;
 pub use crate::types::{
-    AccBandwidth, AccConf, AccDataRate, AccDrdyMap, AccPowerConf, AccPowerEnable, AccRange,
+    AccBandwidth, AccConf, AccDataRate, AccDrdyMap, AccOffOn, AccRange, AccWakeSuspend,
     AccelerometerConfig, ErrCode, Error, GyroBandwidth, GyroDrdyMap, GyroPowerMode, GyroRange,
     IntConfiguration, IntPin, PinActive, PinBehavior, Sensor3DData,
 };

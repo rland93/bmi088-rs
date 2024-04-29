@@ -96,7 +96,7 @@ fn main() -> ! {
         // ----------------------------------------------------
         info!("Writing and reading back enable register");
 
-        let enable = bmi088::AccPowerEnable::On;
+        let enable = bmi088::AccOffOn::On;
         acc_dev.acc_enable_write(enable).unwrap();
         let readback_enable = acc_dev.acc_enable_read().unwrap();
         assert!(enable == readback_enable);
@@ -105,7 +105,7 @@ fn main() -> ! {
         // ---------------------------------------------------
         info!("Writing and reading back power register");
 
-        let power = bmi088::AccPowerConf::Active;
+        let power = bmi088::AccWakeSuspend::Active;
         acc_dev.acc_wake_suspend_write(power).unwrap();
         let readback_power = acc_dev.acc_wake_suspend_read().unwrap();
         assert!(power == readback_power);

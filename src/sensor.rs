@@ -2,7 +2,7 @@ use crate::{
     interface::{ReadData, WriteData},
     reg::{AccRegisters, GyroRegisters},
     types::{
-        AccConf, AccDrdyMap, AccPowerConf, AccPowerEnable, AccRange, AccelerometerConfig, ErrCode,
+        AccConf, AccDrdyMap, AccOffOn, AccRange, AccWakeSuspend, AccelerometerConfig, ErrCode,
         GyroBandwidth, GyroDrdyMap, GyroPowerMode, GyroRange, IntConfiguration, PinActive,
         PinBehavior, Sensor3DData,
     },
@@ -276,11 +276,11 @@ where
     /// - `Ok(AccPowerConf)`: Power conf value
     /// - `Err(Error<CommE>)`: Read failure
     ///
-    pub fn acc_wake_suspend_read(&mut self) -> Result<AccPowerConf, Error<CommE>> {
+    pub fn acc_wake_suspend_read(&mut self) -> Result<AccWakeSuspend, Error<CommE>> {
         let reg = self
             .iface
             .read_register_acc(AccRegisters::ACC_PWR_CONF as u8)?;
-        AccPowerConf::try_from(reg).map_err(|_| Error::InvalidInputData)
+        AccWakeSuspend::try_from(reg).map_err(|_| Error::InvalidInputData)
     }
 
     /// Writes the ACC_PWR_CONF (0x7C) register to suspend or wake the
@@ -295,7 +295,7 @@ where
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
     ///
-    pub fn acc_wake_suspend_write(&mut self, conf: AccPowerConf) -> Result<(), Error<CommE>> {
+    pub fn acc_wake_suspend_write(&mut self, conf: AccWakeSuspend) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::ACC_PWR_CONF as u8;
         let set = conf as u8;
         let mut data = [reg, set];
@@ -311,11 +311,11 @@ where
     /// - `Ok(AccPowerEnable)`: Power enable value
     /// - `Err(Error<CommE>)`: Read failure
     ///
-    pub fn acc_enable_read(&mut self) -> Result<AccPowerEnable, Error<CommE>> {
+    pub fn acc_enable_read(&mut self) -> Result<AccOffOn, Error<CommE>> {
         let reg = self
             .iface
             .read_register_acc(AccRegisters::ACC_PWR_CTRL as u8)?;
-        AccPowerEnable::try_from(reg).map_err(|_| Error::InvalidInputData)
+        AccOffOn::try_from(reg).map_err(|_| Error::InvalidInputData)
     }
 
     /// Writes the ACC_PWR_CTRL (0x7D) register to enable or disable the sensor.
@@ -330,7 +330,7 @@ where
     /// - `Ok(())`: Write success
     /// - `Err(Error<CommE>)`: Write failure
     ///
-    pub fn acc_enable_write(&mut self, enable: AccPowerEnable) -> Result<(), Error<CommE>> {
+    pub fn acc_enable_write(&mut self, enable: AccOffOn) -> Result<(), Error<CommE>> {
         let reg = AccRegisters::ACC_PWR_CTRL as u8;
         let set = enable as u8;
         let mut data = [reg, set];
@@ -364,8 +364,8 @@ where
     ///
     pub fn init(&mut self, configuration: AccelerometerConfig) -> Result<(), Error<CommE>> {
         self.acc_configuration_write(configuration)?;
-        self.acc_enable_write(AccPowerEnable::On)?;
-        self.acc_wake_suspend_write(AccPowerConf::Active)?;
+        self.acc_enable_write(AccOffOn::On)?;
+        self.acc_wake_suspend_write(AccWakeSuspend::Active)?;
         Ok(())
     }
 

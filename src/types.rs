@@ -11,20 +11,20 @@ pub enum Error<CommE> {
 
 /// Accelerometer Power Mode
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum AccPowerConf {
+pub enum AccWakeSuspend {
     /// Normal Mode
     Active = 0x00,
     /// Suspend Mode
     Suspend = 0x03,
 }
 
-impl TryFrom<u8> for AccPowerConf {
+impl TryFrom<u8> for AccWakeSuspend {
     type Error = Error<()>;
 
     fn try_from(item: u8) -> Result<Self, Self::Error> {
         match item {
-            0x00 => Ok(AccPowerConf::Active),
-            0x03 => Ok(AccPowerConf::Suspend),
+            0x00 => Ok(AccWakeSuspend::Active),
+            0x03 => Ok(AccWakeSuspend::Suspend),
             _ => Err(Error::InvalidInputData),
         }
     }
@@ -34,20 +34,20 @@ impl TryFrom<u8> for AccPowerConf {
 /// 0x00 Accelerometer off
 //  0x04 Accelerometer on
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum AccPowerEnable {
+pub enum AccOffOn {
     /// Power off
     Off = 0x00,
     /// Power on
     On = 0x04,
 }
 
-impl TryFrom<u8> for AccPowerEnable {
+impl TryFrom<u8> for AccOffOn {
     type Error = Error<()>;
 
     fn try_from(item: u8) -> Result<Self, Self::Error> {
         match item {
-            0x00 => Ok(AccPowerEnable::Off),
-            0x04 => Ok(AccPowerEnable::On),
+            0x00 => Ok(AccOffOn::Off),
+            0x04 => Ok(AccOffOn::On),
             _ => Err(Error::InvalidInputData),
         }
     }
