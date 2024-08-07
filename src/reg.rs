@@ -1,73 +1,66 @@
 // ignore case warnings
 #![allow(non_camel_case_types)]
 #![allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Clone, Copy, PartialEq)]
 
+//#[allow(dead_code)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AccRegisters {
-    /// Accelerometer Chip ID
-    ACC_CHIP_ID = 0x00,
-    /// Reports sensor error conditions
-    ACC_ERR_REG = 0x02,
-    /// Sensor status flag
-    ACC_STATUS = 0x03,
-    /// Acceleration data (0x12-0x17)
-    ACC_DATA = 0x12,
-    /// Sensortime data (0x18-0x1A)
-    ACC_SENSORTIME = 0x18,
-    /// Interrupt status register
-    ACC_INT_STAT_1 = 0x1D,
-    /// Temperature data register (0x22-0x23)
-    TEMPERATURE = 0x22,
-    /// Accelerometer configuration register
-    ACC_CONF = 0x40,
-    /// Accelerometer range setting
-    ACC_RANGE = 0x41,
-    /// Configures the input/output pin INT1.
-    INT1_IO_CONF = 0x53,
-    /// Configures the input/output pin INT2.
-    INT2_IO_CONF = 0x54,
-    /// Map data ready interrupt to output pin INT1 and/or INT2
-    INT1_INT2_MAP_DATA = 0x58,
-    // Enables the sensor self-test signal, occurring as a steady offset to the
-    // sensor output. Note that the self-test needs to be switched off actively
-    // by the user (details see 4.6.1).
-    // ACC_SELF_TEST = 0x6D,
-    /// Switches accelerometer into suspend mode for saving power. In this mode
-    /// the data acquisition is
-    ACC_PWR_CONF = 0x7C,
-    /// Switches accelerometer ON or OFF. Required to do after every reset in
-    /// order to obtain acceleration values.
-    ACC_PWR_CTRL = 0x7D,
-    /// Writing a value of 0xB6 to this register resets the sensor. Following a
-    /// delay of 1 ms, all configuration settings are overwritten with their
-    /// reset value. The soft-reset can be triggered from any operation mode.
     ACC_SOFTRESET = 0x7E,
+    ACC_PWR_CTRL = 0x7D,
+    ACC_PWR_CONF = 0x7C,
+    ACC_SELF_TEST = 0x6D,
+    INT_MAP_DATA = 0x58,
+    INT2_IO_CTRL = 0x54,
+    INT1_IO_CTRL = 0x53,
+    FIFO_CONFIG_1 = 0x49,
+    FIFO_CONFIG_0 = 0x48,
+    FIFO_WTM_1 = 0x47,
+    FIFO_WTM_0 = 0x46,
+    FIFO_DOWNS = 0x45,
+    ACC_RANGE = 0x41,
+    ACC_CONF = 0x40,
+    FIFO_DATA = 0x26,
+    FIFO_LENGTH_1 = 0x25,
+    FIFO_LENGTH_0 = 0x24,
+    TEMP_LSB = 0x23,
+    TEMP_MSB = 0x22,
+    ACC_INT_STAT_1 = 0x1D,
+    SENSORTIME_2 = 0x1A,
+    SENSORTIME_1 = 0x19,
+    SENSORTIME_0 = 0x18,
+    ACC_Z_MSB = 0x17,
+    ACC_Z_LSB = 0x16,
+    ACC_Y_MSB = 0x15,
+    ACC_Y_LSB = 0x14,
+    ACC_X_MSB = 0x13,
+    ACC_X_LSB = 0x12,
+    ACC_STATUS = 0x03,
+    ACC_ERR_REG = 0x02,
+    ACC_CHIP_ID = 0x00,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+//#[allow(dead_code)]
 pub enum GyroRegisters {
-    /// Gyro ChipID
-    GYRO_CHIP_ID = 0x00,
-    /// Angular Rate Data (0x02-0x07)
-    GYRO_RATE_DATA = 0x02,
-    /// Interrupt Status
-    GYRO_INT_STAT_1 = 0x0A,
-    /// Gyro Range
-    GYRO_RANGE = 0x0F,
-    /// Gyro Bandwidth
-    GYRO_BANDWIDTH = 0x10,
-    /// Selection of the main power modes. Please note that only switching
-    /// between normal mode and the suspend modes is allowed, it is not possible
-    /// to switch between suspend and deep suspend and vice versa.
-    GYRO_LPM1 = 0x11,
-    /// Gyro Soft Reset
-    GYRO_SOFTRESET = 0x14,
-    /// Gyro Interrupt control
+    FIFO_DATA = 0x3F,
+    FIFO_CONFIG_1 = 0x3E,
+    FIFO_CONFIG_0 = 0x3D,
+    GYRO_SELF_TEST = 0x3C,
+    FIFO_EXT_INT_S = 0x34,
+    FIFO_WM_EN = 0x1E,
+    INT3_INT4_IO_MAP = 0x18,
+    INT3_INT4_IO_CONF = 0x16,
     GYRO_INT_CTRL = 0x15,
-    /// Int3, Int4 IO configuration
-    GYRO_INT3_INT4_IO_CONF = 0x16,
-    /// Map data ready interrupt to output pin INT3 and/or INT4
-    GYRO_INT3_INT4_IO_MAP = 0x18,
-    // Built-in self-test of gyroscope.
-    // GYRO_SELF_TEST = 0x3C,
+    GYRO_SOFTRESET = 0x14,
+    GYRO_LPM1 = 0x11,
+    GYRO_BANDWIDTH = 0x10,
+    GYRO_RANGE = 0x0F,
+    FIFO_STATUS = 0x0E,
+    GYRO_INT_STAT_1 = 0x0A,
+    RATE_Z_MSB = 0x07,
+    RATE_Z_LSB = 0x06,
+    RATE_Y_MSB = 0x05,
+    RATE_Y_LSB = 0x04,
+    RATE_X_MSB = 0x03,
+    RATE_X_LSB = 0x02,
+    GYRO_CHIP_ID = 0x00,
 }

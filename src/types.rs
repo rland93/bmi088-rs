@@ -5,6 +5,8 @@ pub enum Error<CommE> {
     Comm(CommE),
     /// Invalid input data
     InvalidInputData,
+    /// Invalid output data
+    InvalidOutputData,
     /// Bad write, if a write fails
     BadWrite,
 }
@@ -201,6 +203,97 @@ pub struct AccelerometerConfig {
     pub conf: AccConf,
     /// Range
     pub acc_range: AccRange,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AccFifoModeConf {
+    Fifo = 0b0000_0010,
+    Stream = 0b0000_0011,
+}
+
+impl From<u8> for AccFifoModeConf {
+    fn from(item: u8) -> Self {
+        match item {
+            0b0000_0010 => AccFifoModeConf::Fifo,
+            0b0000_0011 => AccFifoModeConf::Stream,
+            _ => AccFifoModeConf::Fifo,
+        }
+    }
+}
+
+impl From<AccFifoModeConf> for u8 {
+    fn from(item: AccFifoModeConf) -> Self {
+        match item {
+            AccFifoModeConf::Fifo => 0b0000_0010,
+            AccFifoModeConf::Stream => 0b0000_0011,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum GyroFifoModeConf {
+    Fifo = 0x40,
+    Stream = 0x80,
+}
+
+impl From<u8> for GyroFifoModeConf {
+    fn from(item: u8) -> Self {
+        match item {
+            0x40 => GyroFifoModeConf::Fifo,
+            0x80 => GyroFifoModeConf::Stream,
+            _ => GyroFifoModeConf::Fifo,
+        }
+    }
+}
+
+impl From<GyroFifoModeConf> for u8 {
+    fn from(item: GyroFifoModeConf) -> Self {
+        match item {
+            GyroFifoModeConf::Fifo => 0x40,
+            GyroFifoModeConf::Stream => 0x80,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum FifoExtIntPin {
+    /// INT3
+    Int3 = 0x00,
+    /// INT4
+    Int4 = 0x01,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct FifoExtIntS {
+    pub ext_sync_mode: bool,
+    pub ext_sync_sel: FifoExtIntPin,
+}
+
+impl From<u8> for FifoExtIntS {
+    fn from(item: u8) -> Self {
+        FifoExtIntS {
+            ext_sync_mode: (item & 0b0010_0000) != 0,
+            ext_sync_sel: if (item & 0b0001_0000) != 0 {
+                FifoExtIntPin::Int4
+            } else {
+                FifoExtIntPin::Int3
+            },
+        }
+    }
+}
+
+impl From<FifoExtIntS> for u8 {
+    fn from(item: FifoExtIntS) -> Self {
+        let mut value = 0b0000_0000;
+        if item.ext_sync_mode {
+            value |= 0b0010_0000;
+        }
+        match item.ext_sync_sel {
+            FifoExtIntPin::Int3 => (),
+            FifoExtIntPin::Int4 => value |= 0b0001_0000,
+        }
+        value
+    }
 }
 
 /// Input pin configuration
