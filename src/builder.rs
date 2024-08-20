@@ -19,6 +19,12 @@ pub struct AccConfigurationBuilder {
     config: AccConfiguration,
 }
 
+impl Default for AccConfigurationBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AccConfigurationBuilder {
     pub fn new() -> Self {
         Self {
@@ -116,7 +122,17 @@ pub struct GyroConfigurationBuilder {
     config: GyroConfiguration,
 }
 
+impl Default for GyroConfigurationBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GyroConfigurationBuilder {
+    pub fn default() -> Self {
+        Self::new()
+    }
+
     pub fn new() -> Self {
         Self {
             config: GyroConfiguration::default(),

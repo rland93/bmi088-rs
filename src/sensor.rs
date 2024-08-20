@@ -326,7 +326,6 @@ where
     ///////////////////////////////////////
     /*          GYRO REGISTERS           */
     ///////////////////////////////////////
-    ///
 
     pub fn gyro_fifo_data(&mut self, data: &mut [u8]) -> Result<(), Error<CommE>> {
         self.iface
