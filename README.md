@@ -31,7 +31,7 @@ Thank you to [@eldruin](https://github.com/eldruin/bmi160-rs). The design of thi
   - [x] Interrupt Configuration (3/4)
   - [x] Status Registers
   - [ ] Self Test
-  - [ ] Example Code
+  - [x] Example Code
 
 - Misc.
   - [ ] Publish on crates.io
@@ -40,17 +40,36 @@ Thank you to [@eldruin](https://github.com/eldruin/bmi160-rs). The design of thi
  
 ## Example Code
 
-There are two examples: 
+To load the example code, create your `.cargo` configuration:
 
-- examples/stm32f411-i2c.rs
-- examples/stm32f401-spi.rs
+```toml
+[target.thumbv7em-none-eabihf]
+rustflags = [
+  # --- KEEP existing `link-arg` flags ---
+  "-C", "link-arg=-Tlink.x",
+  "-C", "link-arg=--nmagic",
+  # --- ADD following new flag ---
+  "-C", "link-arg=-Tdefmt.x",
+]
 
-Those are also the hardware test code.
+[build]
+target = "thumbv7em-none-eabihf"
 
-You can run them with any probe-rs compatible debug probe.
+[env]
+DEFMT_LOG = "trace"
 
-The i2c example code can be built on an STM32F411RETx "Black Pill" board: https://stm32-base.org/boards/STM32F411CEU6-WeAct-Black-Pill-V2.0.html. Connect the sensor to i2c1. 
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+runner = "probe-run --chip STM32F401RCTx"
+```
 
-I am not sure if there is a similarly cheap/easily accessible STM32F401 based dev board but you can modify the example to suit your needs. Be sure to modify memory.x and .cargo/config.toml.
+Replacing your board setup, of course. By default, the examples use SPI3:
 
-Or any other STM32 hardware can be used with minor modifications to the target, memory.x, and probe-rs settings.
+- SCK: pc10
+- MISO: pc11
+- MOSI: pc12
+- Acc CS: pd2
+- Gyro CS: pb5
+
+However, you can easily replace the pin and peripheral setup with your own. 
+
+You should be able to compile and run the code examples by doing `cargo run`.

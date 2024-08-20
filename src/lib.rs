@@ -4,7 +4,7 @@
 //!
 //!
 
-#![deny(unsafe_code, missing_docs)]
+#![deny(unsafe_code)]
 #![no_std]
 
 const I2C_ACC_BASE_ADDR: u8 = 0x18;
@@ -12,23 +12,23 @@ const I2C_ACC_ALT_ADDR: u8 = 0x19;
 const I2C_GYRO_BASE_ADDR: u8 = 0x68;
 const I2C_GYRO_ALT_ADDR: u8 = 0x69;
 
+mod builder;
 pub mod interface;
 mod reg;
-mod sensor;
-mod types;
+pub mod sensor;
+pub mod types;
 
-pub use crate::interface::Addr;
-pub use crate::types::{
-    AccBandwidth, AccConf, AccDataRate, AccDrdyMap, AccOffOn, AccRange, AccWakeSuspend,
-    AccelerometerConfig, ErrCode, Error, GyroBandwidth, GyroDrdyMap, GyroPowerMode, GyroRange,
-    IntConfiguration, IntPin, PinActive, PinBehavior, Sensor3DData,
-};
+pub use builder::{AccConfiguration, GyroConfiguration};
+pub use interface::{Addr, I2cInterface, SpiInterface};
+pub use types::acc::*;
+pub use types::gyro::*;
+pub use types::{IntPin, PinActive, PinBehavior, Sensor3DData};
 
 /// BMI088 device object.
 #[derive(Debug)]
 pub struct Bmi088<DI> {
     /// Digital interface (i2c)
-    iface: DI,
+    pub iface: DI,
 }
 
 mod private {

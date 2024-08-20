@@ -1,6 +1,6 @@
 //! I2C interfaces
 
-use crate::{private, Error};
+use crate::{private, types::Error};
 use embedded_hal::i2c;
 use embedded_hal::spi;
 use embedded_hal::spi::Operation;
@@ -185,7 +185,7 @@ where
     type Error = Error<SPI::Error>;
 
     fn read_register_acc(&mut self, register: u8) -> Result<u8, Self::Error> {
-        let mut data = [0xFF, 0xFF];
+        let mut data = [0xFF; 2];
         self.spi
             .transaction(&mut [
                 Operation::Write(&[register | 0x80]),
