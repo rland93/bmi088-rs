@@ -49,6 +49,10 @@ pub struct Sensor3DData {
 }
 
 impl Sensor3DData {
+    pub fn default() -> Self {
+        Self { x: 0, y: 0, z: 0 }
+    }
+
     /// from a 6-byte slice, construct a Sensor3DData
     pub fn from_le_slice(bytes: &[u8]) -> Self {
         let x = i16::from_le_bytes(bytes[0..2].try_into().unwrap());
